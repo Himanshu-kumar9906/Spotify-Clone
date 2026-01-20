@@ -1,2 +1,2 @@
 # Spotify-Clone
-Only Frontend
+This project delivers a high-fidelity music streaming experience by combining a semantic HTML5 structure with a sophisticated CSS3 layout that utilizes Grid and Flexbox to master the classic "Sidebar-Main-Player" interface. On the functional side, I used Vanilla JavaScript to build a custom audio controller capable of dynamic playback (play, pause, skip) and real-time seek bar logic that synchronizes with the track’s progress. The entire UI is built with a mobile-first responsive design, featuring smooth hover transitions and animations that mimic the premium feel of the Spotify desktop app, all while managing complex state and DOM updates without the need for external frameworks.
