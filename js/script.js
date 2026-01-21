@@ -19,43 +19,32 @@ function formatTime(seconds) {
 // You should ideally have a 'songs.json' in each folder listing the files.
 async function getSongs(folder) {
     currfolder = folder;
-    // We point to the relative path of your repository
-    let a = await fetch(`./${folder}/`);
-    let response = await a.text();
-    let div = document.createElement("div");
-    div.innerHTML = response;
-    let as = div.getElementsByTagName("a")
-    songs = []
-    for (let index = 0; index < as.length; index++) {
-        const element = as[index];
-        if (element.href.endsWith(".mp3")) {
-            // Logic to get just the filename
-            songs.push(decodeURIComponent(element.href.split('/').pop()))
-        }
-    }
-    
-    let songUL = document.querySelector(".songList").getElementsByTagName("ul")[0]
-    songUL.innerHTML = ""
+    // We fetch a specific JSON file that lists the songs in this folder
+    // You should create a 'list.json' in each folder with: ["song1.mp3", "song2.mp3"]
+    let a = await fetch(`./${folder}/list.json`);
+    songs = await a.json();
+
+    let songUL = document.querySelector(".songList").getElementsByTagName("ul")[0];
+    songUL.innerHTML = "";
     for (const song of songs) {
-        songUL.innerHTML = songUL.innerHTML + `<li> 
-                            <img class="invert" src="img/music.svg" alt="">
-                            <div class="info">
-                                <div>${song}</div>
-                                <div>By Larry</div>
-                            </div>
-                            <div class="playNow">
-                                <span>Play Now</span>
-                            </div>
-                            <img class="invert" src="img/play.svg" alt="">
-     </li>`;
+        songUL.innerHTML += `<li> 
+            <img class="invert" src="img/music.svg" alt="">
+            <div class="info">
+                <div>${song}</div>
+                <div>By Larry</div>
+            </div>
+            <div class="playNow"><span>Play Now</span></div>
+            <img class="invert" src="img/play.svg" alt="">
+        </li>`;
     }
 
+    // Attach click events to the new list items
     Array.from(document.querySelector(".songList").getElementsByTagName("li")).forEach(e => {
         e.addEventListener("click", () => {
-            playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
-        })
-    })
-    return songs
+            playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim());
+        });
+    });
+    return songs;
 }
 
 const playMusic = (track, pause = false) => {
@@ -70,45 +59,38 @@ const playMusic = (track, pause = false) => {
 }
 
 async function displayAlbums() {
-    // Relative path for deployment
-    let a = await fetch(`./songs/`);
-    let response = await a.text();
-    let div = document.createElement("div");
-    div.innerHTML = response;
-    let anchors = div.getElementsByTagName("a");
     let cardContainer = document.querySelector(".cardContainer");
-    cardContainer.innerHTML = ""; 
-    
-    let array = Array.from(anchors);
-    for (let index = 0; index < array.length; index++) {
-        const e = array[index];
-        if (e.href.includes("/songs/")) {
-            let folder = e.href.split("/").slice(-2)[0];
-            try {
-                // Fetch info.json from the relative path
-                let infoFetch = await fetch(`./songs/${folder}/info.json`);
-                if (!infoFetch.ok) continue;
-                let info = await infoFetch.json(); 
-                cardContainer.innerHTML += `
-                    <div data-folder="${folder}" class="card">
-                        <div class="play">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                <circle cx="24" cy="24" r="24" fill="#22c55e" />
-                                <g transform="translate(12 12)">
-                                    <path d="M18.8906 12.846C18.5371 14.189 16.8667 15.138 13.5257 17.0361 C10.296 18.8709 8.6812 19.7884 7.37983 19.4196 C6.8418 19.2671 6.35159 18.9776 5.95624 18.5787 C5 17.6139 5 15.7426 5 12 C5 8.2574 5 6.3861 5.95624 5.42132 C6.35159 5.02245 6.8418 4.73288 7.37983 4.58042 C8.6812 4.21165 10.296 5.12907 13.5257 6.96393 C16.8667 8.86197 18.5371 9.811 18.8906 11.154 C19.0365 11.7084 19.0365 12.2916 18.8906 12.846Z" fill="#000000" />
-                                </g>
-                            </svg>
-                        </div>
-                        <img src="./songs/${folder}/cover.jpg" alt="cover">
-                        <h2>${info.title}</h2>
-                        <p>${info.description}</p>
-                    </div>`;
-            } catch (err) {
-                console.log("Metadata fetch failed", err);
-            }
+    cardContainer.innerHTML = "";
+
+    // 1. Fetch the main list of folders
+    let a = await fetch(`./songs/songs.json`);
+    let folders = await a.json();
+
+    // 2. Loop through each folder name from the JSON
+    for (const folder of folders) {
+        try {
+            let infoFetch = await fetch(`./songs/${folder}/info.json`);
+            let info = await infoFetch.json();
+            
+            cardContainer.innerHTML += `
+                <div data-folder="${folder}" class="card">
+                    <div class="play">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="24" fill="#22c55e" />
+                            <g transform="translate(12 12)">
+                                <path d="M18.8906 12.846C18.5371 14.189 16.8667 15.138 13.5257 17.0361 C10.296 18.8709 8.6812 19.7884 7.37983 19.4196 C5 17.6139 5 15.7426 5 12 C5 8.2574 5 6.3861 5.95624 5.42132 C6.35159 5.02245 6.8418 4.73288 7.37983 4.58042 C8.6812 4.21165 10.296 5.12907 13.5257 6.96393 C16.8667 8.86197 18.5371 9.811 18.8906 11.154 C19.0365 11.7084 19.0365 12.2916 18.8906 12.846Z" fill="#000000" />
+                            </g>
+                        </svg>
+                    </div>
+                    <img src="./songs/${folder}/cover.jpg" alt="cover">
+                    <h2>${info.title}</h2>
+                    <p>${info.description}</p>
+                </div>`;
+        } catch (err) {
+            console.error("Could not load album info for:", folder);
         }
     }
-
+}
     cardContainer.addEventListener("click", async (event) => {
         const card = event.target.closest(".card");
         if (card) {
@@ -175,3 +157,4 @@ async function main() {
 }
 
 main();
+
