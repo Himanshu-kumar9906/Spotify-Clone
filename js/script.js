@@ -16,7 +16,7 @@ function formatTime(seconds) {
 
 async function getSongs(folder) {
     currfolder = folder;
-    let a = await fetch(`http://127.0.0.1:3000/${folder}/`);
+    let a = await fetch(`${folder}/`);
     let response = await a.text();
     let div = document.createElement("div");
     div.innerHTML = response;
@@ -35,7 +35,7 @@ async function getSongs(folder) {
     
                             <img class="invert" src="img/music.svg" alt="">
                             <div class="info">
-                                <div>${song}</div>
+                                <div>${songs}</div>
                                 <div>By Larry</div>
                             </div>
                             <div class="playNow">
@@ -66,7 +66,7 @@ const playMusic = (track, pause = false) => {
 }
 async function displayAlbums() {
     console.log("Step 1: Fetching all folders...");
-    let a = await fetch(`http://127.0.0.1:3000/songs/`);
+    let a = await fetch(`songs/`);
     let response = await a.text();
     let div = document.createElement("div");
     div.innerHTML = response;
@@ -83,7 +83,7 @@ async function displayAlbums() {
             if (folder === "songs") continue;
             console.log(`Step 2: Processing folder: ${folder}`);
             try {
-                let infoFetch = await fetch(`http://127.0.0.1:3000/songs/${folder}/info.json`);
+                let infoFetch = await fetch(`songs/${folder}/info.json`);
                 if (!infoFetch.ok) continue;
                 let info = await infoFetch.json(); 
                 cardContainer.innerHTML += `
@@ -127,7 +127,7 @@ async function displayAlbums() {
 }
 async function main() {
 
-    await getSongs("songs/fav");
+    await getSongs("songs/guru randhawa");
     playMusic(songs[0], true)
     // display al the albums on the page
     await displayAlbums()
@@ -230,4 +230,5 @@ volumeImg.addEventListener("click", () => {
 });
 }
 main();
+
 
