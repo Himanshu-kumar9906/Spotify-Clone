@@ -103,7 +103,7 @@ async function displayAlbums() {
 
 async function main() {
     // Initialize with a default folder
-    await getSongs("songs/fav");
+    await getSongs("songs/guru randhawa");
     if(songs.length > 0) playMusic(songs[0], true);
 
     await displayAlbums();
@@ -157,6 +157,7 @@ async function main() {
 }
 
 main();
+
 
 
 
