@@ -108,7 +108,7 @@ async function displayAlbums() {
 
 async function main() {
     // IMPORTANT: Make sure this folder matches exactly what is in your songs.json
-    await getSongs("songs/fav"); 
+    await getSongs("songs/guru randhawa"); 
     if(songs && songs.length > 0) playMusic(songs[0], true);
 
     await displayAlbums();
@@ -164,3 +164,4 @@ async function main() {
 }
 
 main();
+
