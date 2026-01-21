@@ -21,7 +21,7 @@ async function getSongs(folder) {
     currfolder = folder;
     // We fetch a specific JSON file that lists the songs in this folder
     // You should create a 'list.json' in each folder with: ["song1.mp3", "song2.mp3"]
-    let a = await fetch(`./${folder}/list.json`);
+    let a = await fetch(`./${folder}/info.json`);
     songs = await a.json();
 
     let songUL = document.querySelector(".songList").getElementsByTagName("ul")[0];
@@ -157,4 +157,5 @@ async function main() {
 }
 
 main();
+
 
